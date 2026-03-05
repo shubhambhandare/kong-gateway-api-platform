@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kong.fullname" . }}-config
+data:
+  kong.yaml: |-
+    _format_version: "3.0"
+    _transform: true
+
+    services:
+      - name: user-service
+        url: http://${USER_SERVICE_HOST}:${USER_SERVICE_PORT}
+        routes:
+          - name: user-service-users
+            paths:
+              - /users
+            methods:
+              - GET
+          - name: user-service-login
+            paths:
+              - /login
+            methods:
+              - POST
+          - name: user-service-health
+            paths:
+              - /health
+            methods:
+              - GET
+          - name: user-service-verify
+            paths:
+              - /verify
+            methods:
+              - GET
+
+    consumers:
+      - username: user-service-client
+
+    jwt_secrets:
+      - consumer: user-service-client
+        key: user-service-client
+        algorithm: HS256
+        secret: ${JWT_SECRET}
+
+    plugins:
+      - name: jwt
+        route: user-service-users
+        config:
+          uri_param_names:
+            - token
+          cookie_names: []
+          secret_is_base64: false
+
+      - name: rate-limiting
+        route: user-service-users
+        config:
+          minute: 10
+          policy: local
+          limit_by: ip
+
+      - name: ip-restriction
+        service: user-service
+        config:
+          allow:
+            - ${ALLOWED_CIDR}
+
+      - name: custom
+        service: user-service
+        config:
+          header_name: "X-Platform"
+          header_value: "internal-api"
+

@@ -1,0 +1,26 @@
+image:
+  repository: kong
+  tag: "3.6"
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+service:
+  type: LoadBalancer
+  httpPort: 80
+  httpsPort: 443
+
+env:
+  userServiceHost: "user-service-user-service"
+  userServicePort: 8000
+  jwtSecret: "CHANGE_ME_JWT_SECRET"
+  allowedCidr: "0.0.0.0/0"
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+

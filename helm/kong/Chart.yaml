@@ -1,0 +1,7 @@
+apiVersion: v2
+name: kong-gateway
+description: Minimal Helm chart for Kong OSS in DB-less mode with custom config and plugin
+type: application
+version: 0.1.0
+appVersion: "3.6"
+

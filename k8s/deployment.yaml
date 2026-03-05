@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: platform
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: platform
+  labels:
+    app: user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: your-dockerhub-username/user-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              value: "sqlite:///./sqlite.db"
+            - name: JWT_ISSUER
+              value: "user-service-client"
+            - name: JWT_AUDIENCE
+              value: "internal-clients"
+            - name: ACCESS_TOKEN_EXPIRE_MINUTES
+              value: "60"
+            - name: DEFAULT_USER_USERNAME
+              value: "admin"
+            - name: DEFAULT_USER_PASSWORD
+              value: "admin123"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: platform
+  labels:
+    app: user-service
+spec:
+  type: ClusterIP
+  selector:
+    app: user-service
+  ports:
+    - port: 8000
+      targetPort: 8000
+      protocol: TCP
+      name: http
+

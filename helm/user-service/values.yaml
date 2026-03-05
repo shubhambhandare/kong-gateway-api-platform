@@ -1,0 +1,31 @@
+replicaCount: 1
+
+image:
+  repository: your-dockerhub-username/user-service
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8000
+
+resources: {}
+
+env:
+  databaseUrl: "sqlite:///./sqlite.db"
+  jwtIssuer: "user-service-client"
+  jwtAudience: "internal-clients"
+  accessTokenExpiryMinutes: 60
+  jwtSecret: "CHANGE_ME_JWT_SECRET"
+  defaultUser:
+    username: "admin"
+    password: "admin123"
+
+podAnnotations: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
