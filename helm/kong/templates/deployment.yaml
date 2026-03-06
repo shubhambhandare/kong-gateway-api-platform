@@ -33,8 +33,6 @@ spec:
               value: "0.0.0.0:8001"
             - name: KONG_PLUGINS
               value: "bundled,custom"
-            - name: KONG_LUA_PACKAGE_PATH
-              value: "/kong/plugins/?.lua;;"
 
             - name: USER_SERVICE_HOST
               value: "{{ .Values.env.userServiceHost }}"
@@ -61,8 +59,11 @@ spec:
               mountPath: /kong/kong.yaml
               subPath: kong.yaml
             - name: kong-plugin
-              mountPath: /kong/plugins/custom.lua
-              subPath: custom.lua
+              mountPath: /usr/local/share/lua/5.1/kong/plugins/custom/handler.lua
+              subPath: handler.lua
+            - name: kong-plugin
+              mountPath: /usr/local/share/lua/5.1/kong/plugins/custom/schema.lua
+              subPath: schema.lua
 
       volumes:
         - name: kong-config
