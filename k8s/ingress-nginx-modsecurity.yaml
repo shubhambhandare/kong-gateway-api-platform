@@ -14,30 +14,13 @@ data:
     SecRequestBodyAccess On
     SecResponseBodyAccess Off
 
-    # Basic DDoS-style protection: track request bursts per IP
-    SecAction \
-      "id:900001,\
-      phase:1,\
-      nolog,\
-      pass,\
-      initcol:ip=%{REMOTE_ADDR},\
-      setvar:ip.request_counter=+1"
+    # Basic DDoS-style protection
+    SecAction "id:900001,phase:1,nolog,pass,initcol:ip=%{REMOTE_ADDR},setvar:ip.request_counter=+1"
 
     SecRule IP:request_counter "@gt 100" \
-      "id:900002,\
-      phase:1,\
-      deny,\
-      status:429,\
-      log,\
-      msg:'DDoS suspected: too many requests from this IP'"
+      "id:900002,phase:1,deny,status:429,log,msg:'DDoS suspected: too many requests from this IP'"
 
-    # Reset the counter periodically (very simple window)
-    SecAction \
-      "id:900003,\
-      phase:5,\
-      nolog,\
-      pass,\
-      setvar:ip.request_counter=0"
+    SecAction "id:900003,phase:5,nolog,pass,setvar:ip.request_counter=0"
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -45,12 +28,10 @@ metadata:
   name: kong-gateway
   namespace: platform
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/enable-modsecurity: "true"
-    nginx.ingress.kubernetes.io/modsecurity-snippet: |
-      Include /etc/nginx/modsecurity/modsecurity.conf
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
 spec:
+  ingressClassName: nginx
   rules:
     - http:
         paths:
@@ -58,7 +39,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: kong-gateway
+                name: kong-gw-kong-gateway
                 port:
                   number: 80
-
