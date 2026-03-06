@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: your-dockerhub-username/user-service
-  tag: "latest"
+  repository: sbtalentica/user-service
+  tag: "v2"
   pullPolicy: IfNotPresent
 
 service:

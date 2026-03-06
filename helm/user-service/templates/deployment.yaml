@@ -16,9 +16,9 @@ spec:
       labels:
         app.kubernetes.io/name: {{ include "user-service.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
-      annotations:
 {{- with .Values.podAnnotations }}
-{{ toYaml . | indent 8 }}
+      annotations:
+{{ toYaml . | nindent 8 }}
 {{- end }}
     spec:
       containers:
@@ -26,8 +26,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 8000
-              name: http
+            - name: http
+              containerPort: 8000
           env:
             - name: DATABASE_URL
               value: "{{ .Values.env.databaseUrl }}"
@@ -36,13 +36,14 @@ spec:
             - name: JWT_AUDIENCE
               value: "{{ .Values.env.jwtAudience }}"
             - name: ACCESS_TOKEN_EXPIRE_MINUTES
-              value: "{{ .Values.env.accessTokenExpiryMinutes | quote }}"
+              value: {{ .Values.env.accessTokenExpiryMinutes | quote }}
             - name: JWT_SECRET
               value: "{{ .Values.env.jwtSecret }}"
             - name: DEFAULT_USER_USERNAME
               value: "{{ .Values.env.defaultUser.username }}"
             - name: DEFAULT_USER_PASSWORD
               value: "{{ .Values.env.defaultUser.password }}"
+{{- with .Values.resources }}
           resources:
-{{- toYaml .Values.resources | nindent 12 }}
-
+{{ toYaml . | nindent 12 }}
+{{- end }}

@@ -1,5 +1,5 @@
 {{- define "user-service.name" -}}
-{{- default .Chart.name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{- define "user-service.fullname" -}}
