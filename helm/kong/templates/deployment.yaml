@@ -16,6 +16,9 @@ spec:
       labels:
         app.kubernetes.io/name: {{ include "kong.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        checksum/kong-config: {{ include (print $.Template.BasePath "/configmap-kong.yaml") . | sha256sum }}
+        checksum/kong-plugin: {{ include (print $.Template.BasePath "/configmap-plugin.yaml") . | sha256sum }}
     spec:
       containers:
         - name: kong
