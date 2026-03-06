@@ -16,21 +16,25 @@ data:
               - /users
             methods:
               - GET
+            strip_path: false
           - name: user-service-login
             paths:
               - /login
             methods:
               - POST
+            strip_path: false
           - name: user-service-health
             paths:
               - /health
             methods:
               - GET
+            strip_path: false
           - name: user-service-verify
             paths:
               - /verify
             methods:
               - GET
+            strip_path: false
 
     consumers:
       - username: user-service-client
