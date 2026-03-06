@@ -56,8 +56,10 @@ spec:
             - name: kong-plugin
               mountPath: /kong/plugins/custom.lua
               subPath: custom.lua
+{{- with .Values.resources }}
           resources:
-{{- toYaml .Values.resources | nindent 12 }}
+{{ toYaml . | nindent 12 }}
+{{- end }}
       volumes:
         - name: kong-config
           configMap:
@@ -65,4 +67,3 @@ spec:
         - name: kong-plugin
           configMap:
             name: {{ include "kong.fullname" . }}-plugin
-
