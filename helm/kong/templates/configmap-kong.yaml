@@ -9,7 +9,7 @@ data:
 
     services:
       - name: user-service
-        url: http://${USER_SERVICE_HOST}:${USER_SERVICE_PORT}
+        url: http://{{ .Values.env.userServiceHost }}:{{ .Values.env.userServicePort }}
         routes:
           - name: user-service-users
             paths:
@@ -39,7 +39,7 @@ data:
       - consumer: user-service-client
         key: user-service-client
         algorithm: HS256
-        secret: ${JWT_SECRET}
+        secret: {{ .Values.env.jwtSecret | quote }}
 
     plugins:
       - name: jwt
@@ -61,7 +61,7 @@ data:
         service: user-service
         config:
           allow:
-            - ${ALLOWED_CIDR}
+            - {{ .Values.env.allowedCidr | quote }}
 
       - name: custom
         service: user-service
