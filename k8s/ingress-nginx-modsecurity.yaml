@@ -18,9 +18,8 @@ data:
     SecAction "id:900001,phase:1,nolog,pass,initcol:ip=%{REMOTE_ADDR},setvar:ip.request_counter=+1"
 
     SecRule IP:request_counter "@gt 100" \
-      "id:900002,phase:1,deny,status:429,log,msg:'DDoS suspected: too many requests from this IP'"
+      "id:900002,phase:1,deny,status:429,log,logdata:'counter=%{ip.request_counter}',msg:'DDoS suspected: too many requests from this IP'"
 
-    SecAction "id:900003,phase:5,nolog,pass,setvar:ip.request_counter=0"
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -28,7 +27,10 @@ metadata:
   name: kong-gateway
   namespace: platform
   annotations:
-    nginx.ingress.kubernetes.io/enable-modsecurity: "true"
+    # DDoS-style protection via built-in rate limiting (no snippet required)
+    nginx.ingress.kubernetes.io/limit-rps: "10"
+    nginx.ingress.kubernetes.io/limit-connections: "10"
+    nginx.ingress.kubernetes.io/limit-req-status-code: "429"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
 spec:
   ingressClassName: nginx
